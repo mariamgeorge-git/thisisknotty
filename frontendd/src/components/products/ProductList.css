@@ -1,0 +1,263 @@
+.product-list-container {
+  padding: 2rem 0;
+}
+
+.product-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.product-list-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2C2C2C;
+  margin: 0;
+}
+
+.product-list-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.view-toggle button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #FDFBF7;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-toggle button.active {
+  background: #9CAF88;
+  color: white;
+}
+
+.view-toggle button:hover {
+  background: #8A9A7A;
+  color: white;
+}
+
+.sort-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  background: #FDFBF7;
+  color: #2C2C2C;
+  font-size: 0.9rem;
+}
+
+.product-list-content {
+  display: flex;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.product-filters {
+  flex: 0 0 280px;
+}
+
+.product-grid {
+  flex: 1;
+}
+
+.product-grid.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.product-grid.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.product-grid.list-view .product-card {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  background: #FDFBF7;
+  transition: all 0.3s ease;
+}
+
+.product-grid.list-view .product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.product-grid.list-view .product-image {
+  flex: 0 0 200px;
+  height: 200px;
+}
+
+.product-grid.list-view .product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-grid.list-view .product-actions {
+  align-self: flex-end;
+}
+
+.no-products {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
+}
+
+.no-products h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #2C2C2C;
+}
+
+.no-products p {
+  margin-bottom: 2rem;
+}
+
+.no-products button {
+  padding: 0.75rem 2rem;
+  background: #9CAF88;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.no-products button:hover {
+  background: #8A9A7A;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+  color: #9CAF88;
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: #d32f2f;
+  background: #ffebee;
+  border-radius: 8px;
+  margin: 1rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 3rem;
+  padding: 0 1rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #E0E0E0;
+  background: #FDFBF7;
+  color: #2C2C2C;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+  background: #9CAF88;
+  color: white;
+  border-color: #9CAF88;
+}
+
+.pagination button.active {
+  background: #9CAF88;
+  color: white;
+  border-color: #9CAF88;
+}
+
+.pagination button:disabled {
+  background: #F5F5F5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #E0E0E0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-list-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .product-list-controls {
+    justify-content: space-between;
+  }
+  
+  .product-list-content {
+    flex-direction: column;
+  }
+  
+  .product-filters {
+    flex: none;
+    order: 2;
+  }
+  
+  .product-grid.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .product-grid.list-view .product-card {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .product-grid.list-view .product-image {
+    flex: none;
+    width: 100%;
+    height: 200px;
+  }
+  
+  .product-grid.list-view .product-actions {
+    align-self: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid.grid-view {
+    grid-template-columns: 1fr;
+  }
+  
+  .product-list-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .view-toggle {
+    align-self: stretch;
+  }
+  
+  .view-toggle button {
+    flex: 1;
+  }
+} 

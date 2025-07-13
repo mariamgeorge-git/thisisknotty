@@ -1,0 +1,153 @@
+.unauthorized-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.unauthorized-container {
+  max-width: 600px;
+  width: 100%;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.unauthorized-content {
+  padding: 4rem 3rem;
+  text-align: center;
+}
+
+.unauthorized-icon {
+  font-size: 4rem;
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.unauthorized-content h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.unauthorized-message {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.unauthorized-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.unauthorized-help {
+  border-top: 1px solid #e1e8ed;
+  padding-top: 2rem;
+}
+
+.unauthorized-help p {
+  color: #6c757d;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.contact-link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: #5a6fd8;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .unauthorized-page {
+    padding: 1rem;
+  }
+  
+  .unauthorized-content {
+    padding: 3rem 2rem;
+  }
+  
+  .unauthorized-content h1 {
+    font-size: 2rem;
+  }
+  
+  .unauthorized-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    max-width: 250px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .unauthorized-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .unauthorized-icon {
+    font-size: 3rem;
+  }
+  
+  .unauthorized-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .unauthorized-message {
+    font-size: 1rem;
+  }
+} 
