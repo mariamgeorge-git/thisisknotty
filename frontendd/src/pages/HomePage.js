@@ -54,22 +54,16 @@ const HomePage = () => {
       count: 12
     },
     {
-      name: 'Market Bags',
+      name: 'Clutches',
       image: '/knotty2.jpg',
-      description: 'Spacious and stylish',
+      description: 'Chic and compact for evenings',
       count: 8
     },
     {
-      name: 'Handbags',
-      image: '/knotty1.jpg',
-      description: 'Elegant and practical',
+      name: 'Sleeves',
+      image: '/knotty4.jpg',
+      description: 'Protect your devices in style',
       count: 6
-    },
-    {
-      name: 'Beach Bags',
-      image: '/knotty2.jpg',
-      description: 'Perfect for summer',
-      count: 4
     }
   ];
 
@@ -108,7 +102,6 @@ const HomePage = () => {
           <p>Discover unique crochet bags that combine artistry with functionality. Each piece is carefully crafted by hand, ensuring quality and style that lasts.</p>
           <div className="hero-buttons">
             <Link to="/products" className="btn-primary">Shop Now</Link>
-            <Link to="/about" className="btn-secondary">Our Story</Link>
           </div>
         </div>
         <div className="hero-image">

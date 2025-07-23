@@ -8,6 +8,7 @@ const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const userController = require('./Controllers/userController');
 const path = require('path');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 dotenv.config();
 const app = express();
@@ -51,6 +52,7 @@ app.get('/api/v1/test', (req, res) => {
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/', reviewRoutes);
 // app.post('/api/v1/login', userController.login);
 // app.post('/api/v1/register', userController.register);
 // app.post('/api/v1/forgetpassword', userController.forgetPassword);

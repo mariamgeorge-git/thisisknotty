@@ -30,9 +30,14 @@ import {
   Store,
   Favorite,
   LocalShipping,
+  Search,
+  ExpandLess,
+  ExpandMore,
 } from '@mui/icons-material';
+import Collapse from '@mui/material/Collapse';
 import { styled } from '@mui/material/styles';
 import { AuthContext } from '../auth/AuthContext';
+import knottyLogo from '../../assets/knottylogo.jpg';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: '#fff', // White background
@@ -50,6 +55,12 @@ const Logo = styled(Typography)(({ theme }) => ({
   alignItems: 'center',
   gap: theme.spacing(1),
   marginRight: theme.spacing(4),
+  cursor: 'default', // Ensure default cursor
+  '&:hover': {
+    color: '#222', // Prevent color change on hover
+    textDecoration: 'none',
+    cursor: 'default', // Keep default cursor on hover
+  },
 }));
 
 const NavButton = styled(Button)(({ theme }) => ({
@@ -76,9 +87,14 @@ const Navbar = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorElMenu, setAnchorElMenu] = useState(null);
+  const [categoryOpen, setCategoryOpen] = useState(false);
 
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
+  const handleMenuIconClick = (event) => setAnchorElMenu(event.currentTarget);
+  const handleMenuCloseMenu = () => setAnchorElMenu(null);
+  const handleCategoryClick = () => setCategoryOpen((prev) => !prev);
 
   const handleMobileToggle = () => setMobileOpen(!mobileOpen);
 
@@ -127,14 +143,6 @@ const Navbar = () => {
           <ListItemIcon><Logout /></ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItem>
-        <Divider />
-        <ListItem>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box sx={{ fontWeight: 700, color: '#9CAF88', cursor: 'pointer' }}>EN</Box>
-            <span>|</span>
-            <Box sx={{ fontWeight: 500, color: '#888', cursor: 'pointer' }}>FR</Box>
-          </Box>
-        </ListItem>
       </List>
     </Box>
   );
@@ -142,105 +150,73 @@ const Navbar = () => {
   return (
     <StyledAppBar position="sticky">
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: 64 }}>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleMobileToggle}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-
-          <Logo component={RouterLink} to="/">
-            ThisIsKnotty
-          </Logo>
-
-          <Box sx={{ flexGrow: 1 }} />
-
+        <Toolbar disableGutters sx={{ minHeight: 64, display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+          {/* Left: Hamburger menu */}
           {!isMobile && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <NavButton component={RouterLink} to="/">
-                Home
-              </NavButton>
-              <NavButton component={RouterLink} to="/shop">
-                Shop
-              </NavButton>
-              <NavButton component={RouterLink} to="/about">
-                About
-              </NavButton>
-              <NavButton component={RouterLink} to="/contact">
-                Contact
-              </NavButton>
-
-              <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', fontSize: '0.95rem', color: '#222', gap: 1 }}>
-                <Box sx={{ fontWeight: 700, color: '#9CAF88', cursor: 'pointer' }}>EN</Box>
-                <span>|</span>
-                <Box sx={{ fontWeight: 500, color: '#888', cursor: 'pointer' }}>FR</Box>
-              </Box>
-
-              {user ? (
-                <>
-                  <IconButton
-                    onClick={handleProfileMenuOpen}
-                    size="small"
-                    sx={{ ml: 1 }}
-                  >
-                    <Avatar
-                      src={user.profileImage}
-                      alt={user.firstName}
-                      sx={{ width: 32, height: 32 }}
-                    />
-                  </IconButton>
-                </>
-              ) : (
-                <>
-                  <NavButton component={RouterLink} to="/login">
-                    Login
-                  </NavButton>
-                  <NavButton
-                    component={RouterLink}
-                    to="/register"
-                    variant="contained"
-                    color="secondary"
-                  >
-                    Register
-                  </NavButton>
-                </>
-              )}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton color="inherit" aria-label="menu" onClick={handleMobileToggle}>
+                <MenuIcon />
+              </IconButton>
+              <Drawer
+                anchor="left"
+                open={mobileOpen}
+                onClose={handleMobileToggle}
+              >
+                <Box sx={{ width: 250, p: 2 }} role="presentation" onClick={handleMobileToggle}>
+                  <List sx={{ color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                    <ListItem button component={RouterLink} to="/" sx={{ color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                      <ListItemText primary="Home" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                    </ListItem>
+                    <ListItem button onClick={e => { e.stopPropagation(); handleCategoryClick(); }} sx={{ color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif', '&:hover': { color: '#222', backgroundColor: '#f5f5f5' } }}>
+                      <ListItemText primary="Category" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                      {categoryOpen ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+                    <Collapse in={categoryOpen} timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding sx={{ color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                        <ListItem button component={RouterLink} to="/tote-bags" sx={{ pl: 4, color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                          <ListItemText primary="Tote Bags" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                        </ListItem>
+                        <ListItem button component={RouterLink} to="/clutches" sx={{ pl: 4, color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                          <ListItemText primary="Clutches" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                        </ListItem>
+                        <ListItem button component={RouterLink} to="/sleeves" sx={{ pl: 4, color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                          <ListItemText primary="Sleeves" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                        </ListItem>
+                      </List>
+                    </Collapse>
+                    <ListItem button component={RouterLink} to="/login" sx={{ color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                      <ListItemText primary="Sign In" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                    </ListItem>
+                    <ListItem button component={RouterLink} to="/orders" sx={{ color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                      <ListItemText primary="My Orders" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                    </ListItem>
+                    <ListItem button component={RouterLink} to="/wishlist" sx={{ color: '#222', fontFamily: 'Century Gothic, Arial, sans-serif' }}>
+                      <ListItemText primary="Wishlist" primaryTypographyProps={{ fontFamily: 'Century Gothic, Arial, sans-serif' }} />
+                    </ListItem>
+                  </List>
+                </Box>
+              </Drawer>
             </Box>
           )}
 
-          {user && (
-            <>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-              >
-                {filteredMenuItems.map((item) => (
-                  <MenuItem
-                    key={item.text}
-                    component={RouterLink}
-                    to={item.path}
-                    onClick={handleMenuClose}
-                  >
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
-                  </MenuItem>
-                ))}
-                <Divider />
-                <MenuItem onClick={handleLogout}>
-                  <ListItemIcon><Logout /></ListItemIcon>
-                  <ListItemText primary="Logout" />
-                </MenuItem>
-              </Menu>
-            </>
+          {/* Center: Logo */}
+          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+            <Logo>
+              <img src={knottyLogo} alt="Knotty Logo" style={{ height: 32, marginRight: 12 }} />
+              thisisknotty
+            </Logo>
+          </Box>
+
+          {/* Right: search, cart icons */}
+          {!isMobile && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton component={RouterLink} to="/search" color="inherit" aria-label="search">
+                <Search />
+              </IconButton>
+              <IconButton component={RouterLink} to="/cart" color="inherit" aria-label="cart">
+                <ShoppingCart />
+              </IconButton>
+            </Box>
           )}
         </Toolbar>
       </Container>

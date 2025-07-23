@@ -226,7 +226,7 @@ const ContactPage = () => {
       {/* FAQ Section */}
       <section className="faq-section">
         <div className="container">
-          <h2>Frequently Asked Questions</h2>
+          <h2>FAQs</h2>
           <div className="faq-grid">
             {faqs.map((faq, index) => (
               <div key={index} className="faq-item">

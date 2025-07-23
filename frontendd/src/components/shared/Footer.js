@@ -10,10 +10,7 @@ import {
   Divider,
   useTheme,
 } from '@mui/material';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
-import YouTubeIcon from '@mui/icons-material/YouTube';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -45,25 +42,30 @@ const Footer = () => {
             Handmade crochet bags, crafted with love and care. Unique. Sustainable. Knotty.
             </Typography>
             <Box sx={{ mt: 2 }}>
-              {['Facebook', 'Twitter', 'Instagram', 'YouTube'].map((name) => (
-                <IconButton
-                  key={name}
-                  color="inherit"
-                  aria-label={name}
-                  sx={{
-                    '&:hover': {
-                      color: '#ffcc00',
-                    },
-                  }}
-                >
-                  {{
-                    Facebook: <FacebookIcon />,
-                    Twitter: <TwitterIcon />,
-                    Instagram: <InstagramIcon />,
-                    YouTube: <YouTubeIcon />,
-                  }[name]}
-                </IconButton>
-              ))}
+              <IconButton
+                color="inherit"
+                aria-label="Instagram"
+                component="a"
+                href="https://www.instagram.com/thisisknotty?igsh=Njh0NDVpZXlicWlo"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ '&:hover': { color: '#ffcc00' } }}
+              >
+                <InstagramIcon />
+              </IconButton>
+              <IconButton
+                color="inherit"
+                aria-label="TikTok"
+                component="a"
+                href="https://www.tiktok.com/@thisisknotty?_t=ZS-8y0Z027pStk&_r=1"
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ '&:hover': { color: '#ffcc00' } }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21.6 8.64c-1.44 0-2.64-1.2-2.64-2.64V3.12h-3.12v12.24c0 1.44-1.2 2.64-2.64 2.64s-2.64-1.2-2.64-2.64 1.2-2.64 2.64-2.64c.24 0 .48.04.72.12v-3.2c-.24-.04-.48-.08-.72-.08-3.12 0-5.68 2.56-5.68 5.68s2.56 5.68 5.68 5.68 5.68-2.56 5.68-5.68v-4.16c.8.48 1.76.8 2.72.8v-3.12z"/>
+                </svg>
+              </IconButton>
             </Box>
           </Grid>
 

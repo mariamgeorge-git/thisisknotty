@@ -1,174 +1,72 @@
-import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../components/auth/AuthContext';
-import './AuthPages.css';
+import React from 'react';
+import { Box, Typography, TextField, Button, Divider } from '@mui/material';
+import googleLogo from '../assets/google.jpg';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: tokenResponse => {
+      // You get access token here: tokenResponse.access_token
+      // Send this token to your backend or use it as needed
+      console.log(tokenResponse);
+    },
+    onError: error => {
+      console.error('Google Login Failed:', error);
+    }
   });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsLoading(true);
-    
-    try {
-      await login(formData.email, formData.password);
-      navigate('/');
-    } catch (error) {
-      setErrors({ submit: error.message || 'Login failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
-    <div className="auth-page">
-      <div className="auth-container">
-        <div className="auth-header">
-          <Link to="/" className="logo">
-            <h1>ThisIsKnotty</h1>
-          </Link>
-          <p>Welcome back! Sign in to your account</p>
-        </div>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', pt: 8, background: '#fafbfc' }}>
+      {/* Title */}
+      <Typography variant="h4" sx={{ fontWeight: 700, mb: 4, textAlign: 'center', letterSpacing: 1 }}>
+        MY KNOTTY ACCOUNT
+      </Typography>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
+      {/* Login Form */}
+      <Box sx={{ width: '100%', maxWidth: 400, background: '#fff', p: 4, borderRadius: 3, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', mb: 4 }}>
+        <TextField
+          label="Email"
               type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={errors.email ? 'error' : ''}
-              placeholder="Enter your email"
-            />
-            {errors.email && <span className="error-message">{errors.email}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
+          fullWidth
+          margin="normal"
+          variant="outlined"
+        />
+        <TextField
+          label="Password"
               type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className={errors.password ? 'error' : ''}
-              placeholder="Enter your password"
-            />
-            {errors.password && <span className="error-message">{errors.password}</span>}
-          </div>
+          fullWidth
+          margin="normal"
+          variant="outlined"
+        />
+        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2, mb: 2, py: 1.2, fontWeight: 600 }}>
+          Continue
+        </Button>
+        <Divider sx={{ my: 2 }}>OR</Divider>
+        <Button variant="outlined" color="primary" fullWidth sx={{ py: 1.2, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }} onClick={() => loginWithGoogle()}>
+          <img src={googleLogo} alt="Google" style={{ width: 24, height: 24, marginRight: 8 }} />
+          Continue with Google Account
+        </Button>
+      </Box>
 
-          <div className="form-options">
-            <label className="checkbox-label">
-              <input type="checkbox" />
-              <span>Remember me</span>
-            </label>
-            <Link to="/forgot-password" className="forgot-link">
-              Forgot password?
-            </Link>
-          </div>
-
-          {errors.submit && (
-            <div className="error-message submit-error">
-              {errors.submit}
-            </div>
-          )}
-
-          <button 
-            type="submit" 
-            className="auth-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          <p>
-            Don't have an account?{' '}
-            <Link to="/register" className="auth-link">
-              Sign up here
-            </Link>
-          </p>
-        </div>
-
-        <div className="auth-features">
-          <div className="feature">
-            <div className="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              </svg>
-            </div>
-            <div className="feature-text">
-              <h4>Secure Shopping</h4>
-              <p>Your account is protected with industry-standard security</p>
-            </div>
-          </div>
-          
-          <div className="feature">
-            <div className="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 12l2 2 4-4"></path>
-                <path d="M21 12c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"></path>
-                <path d="M3 12c1 0 2-1 2-2s-1-2-2-2-2 1-2 2 1 2 2 2z"></path>
-              </svg>
-            </div>
-            <div className="feature-text">
-              <h4>Quality Guarantee</h4>
-              <p>Every product is handcrafted with love and care</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      {/* Join Knotty Section */}
+      <Box sx={{ width: '100%', maxWidth: 400, textAlign: 'center', background: '#fff', p: 4, borderRadius: 3, boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, letterSpacing: 1 }}>
+          JOIN KNOTTY
+        </Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 2 }}>
+          TRACK YOUR ORDERS
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2, color: '#444' }}>
+          Follow your orders every step of the way.
+        </Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 2 }}>
+          STREAMLINE CHECKOUT
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#444' }}>
+          Chcekout faster with saved addresses and payment methods.
+        </Typography>
+      </Box>
+    </Box>
   );
 };
 

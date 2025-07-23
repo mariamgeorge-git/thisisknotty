@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -37,6 +37,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/thumbs';
+import axios from 'axios';
 
 const StyledSwiper = styled(Swiper)(({ theme }) => ({
   '& .swiper-slide': {
@@ -71,6 +72,50 @@ const ProductDetails = ({ product, onAddToCart, onAddToWishlist, loading, error 
   const [selectedImage, setSelectedImage] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewPhotos, setReviewPhotos] = useState([]);
+  const [canReview, setCanReview] = useState(false); // Assume false, set true if verified buyer
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState('');
+
+  useEffect(() => {
+    if (product && product._id) {
+      fetchReviews();
+      fetchAvgRating();
+      checkVerifiedBuyer();
+    }
+    // eslint-disable-next-line
+  }, [product]);
+
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get(`/api/products/${product._id}/reviews`);
+      setReviews(res.data);
+    } catch (err) {
+      setReviews([]);
+    }
+  };
+
+  const fetchAvgRating = async () => {
+    try {
+      const res = await axios.get(`/api/products/${product._id}/reviews/average`);
+      setAvgRating(res.data.avgRating || 0);
+      setReviewCount(res.data.count || 0);
+    } catch (err) {
+      setAvgRating(0);
+      setReviewCount(0);
+    }
+  };
+
+  // Dummy check for verified buyer (replace with real API call)
+  const checkVerifiedBuyer = async () => {
+    // TODO: Replace with real backend check
+    setCanReview(true); // For now, allow all users
+  };
 
   const handleQuantityChange = (event) => {
     const value = parseInt(event.target.value);
@@ -94,6 +139,32 @@ const ProductDetails = ({ product, onAddToCart, onAddToWishlist, loading, error 
 
   const calculateTotal = () => {
     return product.price * quantity;
+  };
+
+  const handlePhotoChange = (e) => {
+    setReviewPhotos([...e.target.files]);
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setReviewError('');
+    setReviewSuccess('');
+    try {
+      // For now, just send text, rating, and photo names (no upload logic)
+      await axios.post(`/api/products/${product._id}/reviews`, {
+        rating: reviewRating,
+        comment: reviewText,
+        photos: reviewPhotos.map(f => f.name),
+      });
+      setReviewSuccess('Review submitted!');
+      setReviewText('');
+      setReviewRating(0);
+      setReviewPhotos([]);
+      fetchReviews();
+      fetchAvgRating();
+    } catch (err) {
+      setReviewError(err.response?.data?.message || 'Failed to submit review');
+    }
   };
 
   if (loading) {
@@ -198,11 +269,9 @@ const ProductDetails = ({ product, onAddToCart, onAddToWishlist, loading, error 
           </Typography>
 
           {/* Rating */}
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Rating value={4.5} precision={0.5} readOnly />
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-              (24 reviews)
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <Rating value={avgRating} precision={0.1} readOnly />
+            <Typography variant="body2" sx={{ ml: 1 }}>{avgRating.toFixed(1)} ({reviewCount} reviews)</Typography>
           </Box>
 
           {/* Price */}
@@ -438,9 +507,67 @@ const ProductDetails = ({ product, onAddToCart, onAddToWishlist, loading, error 
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Customer Reviews
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Reviews will be displayed here once customers start leaving them.
-              </Typography>
+              {reviews.length === 0 && <Typography>No reviews yet.</Typography>}
+              {reviews.map((review, idx) => (
+                <Card key={idx} sx={{ mb: 2, p: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <Rating value={review.rating} readOnly size="small" />
+                    <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{review.userId?.firstName} {review.userId?.lastName}</Typography>
+                    {review.isVerifiedBuyer && <Chip label="Verified Buyer" color="success" size="small" sx={{ ml: 2 }} />}
+                  </Box>
+                  <Typography variant="body2" sx={{ mb: 1 }}>{review.comment}</Typography>
+                  {review.photos && review.photos.length > 0 && (
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
+                      {review.photos.map((photo, i) => (
+                        <CardMedia
+                          key={i}
+                          component="img"
+                          image={photo}
+                          alt={`Review photo ${i + 1}`}
+                          sx={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 2 }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                  <Typography variant="caption" color="text.secondary">{new Date(review.createdAt).toLocaleDateString()}</Typography>
+                </Card>
+              ))}
+
+              {/* Review Form */}
+              {canReview && (
+                <Box component="form" onSubmit={handleReviewSubmit} sx={{ mt: 4, p: 3, border: '1px solid #eee', borderRadius: 2 }}>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Write a Review</Typography>
+                  <Rating
+                    value={reviewRating}
+                    onChange={(_, newValue) => setReviewRating(newValue)}
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    label="Your review"
+                    value={reviewText}
+                    onChange={e => setReviewText(e.target.value)}
+                    fullWidth
+                    multiline
+                    rows={3}
+                    sx={{ mb: 2 }}
+                    required
+                  />
+                  <Button variant="contained" component="label" sx={{ mb: 2 }}>
+                    Upload Photos
+                    <input type="file" hidden multiple accept="image/*" onChange={handlePhotoChange} />
+                  </Button>
+                  {reviewPhotos.length > 0 && (
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                      {Array.from(reviewPhotos).map((file, i) => (
+                        <Typography key={i} variant="caption">{file.name}</Typography>
+                      ))}
+                    </Box>
+                  )}
+                  {reviewError && <Alert severity="error" sx={{ mb: 2 }}>{reviewError}</Alert>}
+                  {reviewSuccess && <Alert severity="success" sx={{ mb: 2 }}>{reviewSuccess}</Alert>}
+                  <Button type="submit" variant="contained" color="primary">Submit Review</Button>
+                </Box>
+              )}
             </Box>
           )}
         </Box>

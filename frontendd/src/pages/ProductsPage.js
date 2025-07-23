@@ -3,17 +3,19 @@ import { useSearchParams } from 'react-router-dom';
 import ProductList from '../components/products/ProductList';
 import ProductFilter from '../components/products/ProductFilter';
 import './ProductsPage.css';
+import axios from 'axios';
 
-const ProductsPage = () => {
+const ProductsPage = ({ categoryProp }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
+  const [priceRange, setPriceRange] = useState([0, 1000]);
 
   // Get filters from URL params
   const search = searchParams.get('search') || '';
-  const category = searchParams.get('category') || 'all';
+  const category = categoryProp || searchParams.get('category') || 'all';
   const sortBy = searchParams.get('sort') || 'name';
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
@@ -23,19 +25,27 @@ const ProductsPage = () => {
     const loadProducts = async () => {
       setLoading(true);
       try {
-        // Import sample products data
-        const { sampleProducts, categories: productCategories } = await import('../data/sampleProducts');
-        setProducts(sampleProducts);
-        setCategories(productCategories);
+        let url = '/api/v1/products?';
+        if (category && category !== 'all') url += `category=${encodeURIComponent(category)}&`;
+        if (search) url += `search=${encodeURIComponent(search)}&`;
+        if (minPrice) url += `minPrice=${minPrice}&`;
+        if (maxPrice) url += `maxPrice=${maxPrice}&`;
+        if (inStock) url += `inStock=true&`;
+        if (sortBy) url += `sort=${sortBy}&`;
+        const res = await axios.get(url);
+        setProducts(res.data.products || res.data); // support both {products:[]} and []
+        // Optionally fetch categories from backend or extract from products
+        const cats = Array.from(new Set((res.data.products || res.data).map(p => p.category)));
+        setCategories(cats);
       } catch (error) {
-        console.error('Error loading products:', error);
+        setProducts([]);
+        setCategories([]);
       } finally {
         setLoading(false);
       }
     };
-
     loadProducts();
-  }, []);
+  }, [search, category, sortBy, minPrice, maxPrice, inStock]);
 
   const handleFilterChange = (newFilters) => {
     const params = new URLSearchParams(searchParams);
@@ -107,7 +117,18 @@ const ProductsPage = () => {
           {/* Filters Sidebar */}
           <aside className="filters-sidebar">
             <ProductFilter
-              categories={categories}
+              categories={categories || []}
+              colors={[]} // or your actual color list
+              sizes={["small", "medium", "large"]}  // or your actual size list
+              shapes={[]} // or your actual shape list
+              selectedColor=""
+              selectedSize=""
+              selectedShape=""
+              priceRange={priceRange}
+              onColorChange={() => {}}
+              onSizeChange={() => {}}
+              onShapeChange={() => {}}
+              onPriceRangeChange={setPriceRange}
               currentFilters={{
                 search,
                 category,
@@ -178,16 +199,7 @@ const ProductsPage = () => {
 
             {/* Products List */}
             <ProductList
-              filters={{
-                search,
-                category,
-                priceRange: {
-                  min: minPrice ? parseFloat(minPrice) : 0,
-                  max: maxPrice ? parseFloat(maxPrice) : 1000
-                },
-                inStock
-              }}
-              sortBy={sortBy}
+              products={products}
               viewMode={viewMode}
             />
           </main>
